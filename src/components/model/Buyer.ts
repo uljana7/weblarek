@@ -1,4 +1,4 @@
-import { buyer } from "../../types";
+import { buyer, Payment } from "../../types";
 
 export class Buyer implements buyer{
   payment: 'card'|'cash'|'';
@@ -22,7 +22,7 @@ export class Buyer implements buyer{
     };
   }
 
-  saveData(payment: 'card'|'cash'|'', address: string, email: string, phone: string ){
+  saveData(payment: Payment, address: string, email: string, phone: string ){
     this.updateField('payment', payment )
     this.updateField('address', address )
     this.updateField('email', email)

@@ -1,5 +1,7 @@
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
+export type Payment = 'card'|'cash'|'';
+
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
@@ -16,8 +18,19 @@ export interface item{
 };
 
 export interface buyer{
-  payment: 'card'|'cash'|'',
+  payment: Payment,
   address: string,
   email: string,
   phone: string
 }
+
+export interface OrderResponse {
+  id: string
+  total: number
+}
+
+export interface ProductResponse {
+  total: number
+  items: item[]
+}
+

@@ -4,6 +4,9 @@ import { Basket } from './components/model/Basket';
 import { Buyer } from './components/model/Buyer';
 import { Catalogue } from './components/model/Catalogue';
 import { apiProducts } from './utils/data';
+import {ApiInteraction} from './components/model/ApiInteraction.ts';
+import { API_URL } from './utils/constants.ts';
+import { Api } from './components/base/Api.ts';
 
 //фейковые данные для тестирования класса покупателя
 const testBuyerData: buyer = {
@@ -46,3 +49,24 @@ console.log('выбранный товар', testCatalogue.ChoosenCard)
 console.log('поиск товара по реальному айди', testCatalogue.getItemById(apiProducts.items[0].id))
 console.log('поиск товара по несуществующему айди', testCatalogue.getItemById('12345'))
 
+//тестирование работы с сервером
+const api = new Api(API_URL);
+const testApi = new ApiInteraction(api);
+const testApiCatalog = new Catalogue(apiProducts.items, apiProducts.items[0])
+testApi.getProducts().then((result) => {
+    console.log('Сырые данные с сервера:', result)
+    if (result && result.items) {
+      try {
+        testApiCatalog.Items = result.items;
+        console.log( 'извлеченные данные: ',JSON.stringify(testApiCatalog.Items)
+        )
+      } catch (error) {
+        console.error('ошибка извлечения данных', error)
+      }
+    } else {
+      console.error('ошибка в получении данных')
+    }
+  })
+  .catch((error) => {
+    console.error('ошибка в работе сервера',error)
+  })
