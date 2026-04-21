@@ -1,5 +1,5 @@
 import './scss/styles.scss';
-import { Item, BuyerInterface } from './types';
+import { BuyerInterface } from './types';
 import { Basket } from './components/model/Basket';
 import { Buyer } from './components/model/Buyer';
 import { Catalogue } from './components/model/Catalogue';

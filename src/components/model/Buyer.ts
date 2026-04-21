@@ -24,9 +24,7 @@ export class Buyer {
 
   saveData(data: Partial<BuyerInterface>): void {
     if (data.payment !== undefined) {
-      if (['card', 'cash', ''].includes(data.payment)) {
-        this.payment = data.payment;
-      }
+      this.payment = data.payment;
     }
 
     if (data.address !== undefined) {
@@ -43,7 +41,7 @@ export class Buyer {
   }
 
   validatePayment():string{
-    if(this.payment === ''){
+    if(!this.payment.trim()){
       return 'не выбран способ оплаты'
     }
     else{
@@ -52,7 +50,7 @@ export class Buyer {
   }
 
   validateAdress():string{
-    if(this.address === ''){
+    if(!this.address.trim()){
       return 'не указан адрес'
     }
     else {
@@ -61,7 +59,7 @@ export class Buyer {
   }
 
   validateEmail():string{
-    if (!this.email || this.email.trim() === '') {
+    if(!this.email.trim()){
       return 'не указан эмейл';
     }
     else {
@@ -70,7 +68,7 @@ export class Buyer {
   }
 
   validatePhone():string{
-    if (!this.phone || this.phone.trim() === '') {
+    if(!this.phone.trim()) {
       return 'не указан номер телефона';
     }
     else{
