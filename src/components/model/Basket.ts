@@ -1,26 +1,22 @@
-import { item } from "../../types";
+import { Item } from "../../types";
 
 
 export class Basket{
-  protected items: item[];
+  protected items: Item[];
   
-  constructor(itemArray: item[]){
-    this.items = itemArray;
+  constructor(){
+    this.items = [];
   }
 
-  addItem(itemToAdd:item):void{
+  addItem(itemToAdd:Item):void{
     this.items.push(itemToAdd);
   }
 
-  deleteItem(itemToDelete: item):void{
-    //если элемент в списке товаров - удаляем его
-    if(this.items.includes(itemToDelete)){
-      const index = this.items.indexOf(itemToDelete);
-      this.items.splice(index, 1);
-    }
-  }
+  deleteItem(itemId: string): void {
+  this.items = this.items.filter(item => item.id !== itemId);
+}
 
-  public get Items():item[]{
+  getItems():Item[]{
     return this.items;
   }
 

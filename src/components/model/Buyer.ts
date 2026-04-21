@@ -1,16 +1,16 @@
-import { buyer, Payment } from "../../types";
+import { BuyerInterface, Payment } from "../../types";
 
-export class Buyer implements buyer{
-  payment: 'card'|'cash'|'';
-  address: string;
-  email: string;
-  phone: string;
+export class Buyer {
+  protected payment: Payment;
+  protected address: string;
+  protected email: string;
+  protected phone: string;
 
-  constructor(payment:'card'|'cash'|'', address: string, email: string, phone: string ){
-    this.payment = payment;
-    this.address = address;
-    this.email = email;
-    this.phone = phone;
+  constructor( ){
+    this.payment = '';
+    this.address = '';
+    this.email = '';
+    this.phone = '';
   }
 
   getAllData() {
@@ -22,38 +22,28 @@ export class Buyer implements buyer{
     };
   }
 
-  saveData(payment: Payment, address: string, email: string, phone: string ){
-    this.updateField('payment', payment )
-    this.updateField('address', address )
-    this.updateField('email', email)
-    this.updateField('phone', phone)
-  }
-
-  updateField(fieldName: keyof buyer, value: string): void {
-    
-    if (fieldName === 'payment') {
-      // Для payment допускаются только 'card', 'cash', ''
-      if (value === 'card' || value === 'cash' || value === '') {
-        this.payment = value as 'card' | 'cash' | '';
-        return;
+  saveData(data: Partial<BuyerInterface>): void {
+    if (data.payment !== undefined) {
+      if (['card', 'cash', ''].includes(data.payment)) {
+        this.payment = data.payment;
       }
     }
-     else if (value.trim() === '') { //не даем записывать пустые значения в поля
-        return;
-      }
-      else if (fieldName === 'address' ) {
-      this.address = value;
-    } 
-    else if (fieldName === 'email') {
-      this.email = value;
-    } 
-    else if (fieldName === 'phone') {
-      this.phone = value;
+
+    if (data.address !== undefined) {
+      this.address = data.address;
+    }
+
+    if (data.email !== undefined) {
+      this.email = data.email;
+    }
+
+    if (data.phone !== undefined) {
+      this.phone = data.phone;
     }
   }
 
   validatePayment():string{
-    if(this.payment == ''){
+    if(this.payment === ''){
       return 'не выбран способ оплаты'
     }
     else{
@@ -71,22 +61,20 @@ export class Buyer implements buyer{
   }
 
   validateEmail():string{
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailRegex.test(this.email)){
-      return ''
+    if (!this.email || this.email.trim() === '') {
+      return 'не указан эмейл';
     }
-    else{
-      return 'некорректный эмейл'
+    else {
+      return ''
     }
   }
 
   validatePhone():string{
-    const phoneRegex = /^\+?\d{10,15}$/;
-    if(phoneRegex.test(this.phone)){
-      return ''
+    if (!this.phone || this.phone.trim() === '') {
+      return 'не указан номер телефона';
     }
     else{
-      return 'некорректный формат номера телефона'
+      return ''
     }
   }
 

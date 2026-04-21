@@ -1,4 +1,4 @@
-import{IApi, ProductResponse, OrderResponse, buyer} from "../../types"
+import{IApi, ProductResponse, OrderResponse, Order} from "../../types"
 
 export class ApiInteraction{
   protected API: IApi;
@@ -12,11 +12,10 @@ export class ApiInteraction{
     return data
   }
 
-  async postOrder(order: buyer): Promise<OrderResponse>{
+  async postOrder(order: Order): Promise<OrderResponse>{
     const response = await this.API.post<OrderResponse>(
       `/order/`,
       order,
-      'POST',
     )
     return response
   }

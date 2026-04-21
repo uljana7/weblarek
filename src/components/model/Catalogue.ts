@@ -1,32 +1,32 @@
-import { item } from "../../types";
+import { Item } from "../../types";
 
 export class Catalogue{
-  protected items: item[];
-  protected choosenCard: item;
+  protected items: Item[];
+  protected choosenCard: Item|null;
 
-  constructor(itemArray: item[], card: item){
-    this.items = itemArray;
-    this.choosenCard = card;
+  constructor(){
+    this.items = [];
+    this.choosenCard = null;
   }
 
-  public get Items(): item[] {
+  public getItems(): Item[] {
     return this.items;
   }
 
-  public set ChoosenCard(itemToSave: item){
+  public setChoosenCard(itemToSave: Item){
     this.choosenCard = itemToSave;
   }
 
-  public get ChoosenCard(): item{
+  public getChoosenCard(): Item|null{
     return this.choosenCard;
   }
 
-  public set Items(itemsToSave: item[]){
+  public setItems(itemsToSave: Item[]){
     this.items = itemsToSave;
   }
 
-  public getItemById(id: string): item | null {
+  public getItemById(id: string): Item | undefined {
     const foundItem = this.items.find(item => item.id === id);
-    return foundItem ?? null; 
+    return foundItem ?? undefined; 
   }
 }
