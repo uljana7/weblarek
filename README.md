@@ -190,3 +190,175 @@ Presenter - презентер содержит основную логику п
 `async getProducts(): Promise<ProductResponse>` — получает список товаров с сервера. Возвращает промис с ответом о товарах.
 `async postOrder(order: Order): Promise<OrderResponse>` — отправляет заказ на сервер. Принимает объект заказа и возвращает промис с ответом о заказе.
 
+# Слой представления
+
+## Класс Basket
+Отвечает за обновление и отображение списка товаров к заказу в шапке интерфейса, а также за обработку событий, связанных с оформлением заказа.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр класса Header, принимая объект событий и контейнер для слоя представления.
+
+Поля класса:
+`private basketItems: HTMLUListElement` — элемент DOM для размещения списка товаров в корзине.
+`private basketButton: HTMLButtonElement` — кнопка для оформления заказа.
+`private priceElement: HTMLElement` — элемент, отображающий текущую стоимость корзины.
+`protected events: IEvents` — объект для управления событиями (унаследовано от Component).
+`protected container: HTMLElement` — основной DOM-контейнер компонента (унаследовано от Component).
+
+Методы:
+`set price(value: number)` — устанавливает и отображает значение стоимости корзины. Переданное число конвертируется в строку и выводится вместе с текстом «синапсов».
+
+## Класс Card
+Отвечает за отображение карточки товара, обновляет название и цену, интегрируется с системой событий.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр карточки товара, принимает объект событий и DOM-контейнер для рендера.
+
+Поля класса:
+`protected titleElement: HTMLHeadingElement` — элемент для отображения названия товара.
+`protected priceElement: HTMLElement `— элемент для отображения цены товара.
+`protected events: IEvents` — объект для генерации событий и коммуникации (унаследовано).
+`protected container: HTMLElement` — контейнер для размещения элементов карточки (унаследовано от Component).
+
+Методы:
+`set title(value: string)` — обновляет название для карточки товара в соответствующем элементе.
+`set price(value: number | null)` — обновляет отображение цены:
+Если value равно null, выводит «Бесценно».
+Если передано значение, отображает цену с указанием "синапсов".
+
+## Класс CardBasket
+Расширяет функциональность карточки товара, добавляя отображение категории, изображения, а также кнопку удаления элемента из корзины. Используется для отображения карточки товара в корзине
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр карточки корзины, принимает объект событий и DOM-контейнер.
+
+Поля класса:
+`protected catagoryElement: HTMLElement` — элемент для отображения категории товара.
+`protected imageElement: HTMLImageElement` — элемент для отображения изображения товара.
+`protected deleteButton: HTMLButtonElement` — кнопка для удаления товара из корзины.
+`protected indexElement: HTMLElement` — элемент для отображения индекса или порядкового номера товара.
+`protected events: IEvents` — объект для эмитирования событий (унаследовано).
+
+Методы:
+`set image(src: string)` — задает исходник изображения товара.
+`set category(value: string)` — обновляет отображение категории товара.
+`set index(value: number)` — обновляет отображение индекса товара.
+
+## Класс CardCatalog
+Расширяет карточку товара для каталога, позволяет обновлять изображение и категорию, а также реагировать на клики по карточке.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр карточки каталога, принимает объект событий и DOM-контейнер.
+
+Поля класса:
+`protected catagoryElement: HTMLElement` — элемент для отображения категории товара.
+`protected imageElement: HTMLImageElement` — элемент для отображения изображения товара.
+`protected events: IEvents` — объект для генерации событий (унаследовано).
+`protected container: HTMLElement` — контейнер для карточки (унаследовано от Card).
+
+Методы:
+`set image(src: string)` — задает изображение товара.
+`set category(value: string)` — обновляет категорию товара и добавляет соответствующий CSS-класс из categoryMap.
+
+## Класс CardCatalog
+Расширяет стандартную карточку товара, добавляя отображение описания, категории, а также кнопку для добавления товара в корзину. При клике по кнопке генерируется событие item:addToCard. Используется для отображения в каталоге товаров
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр карточки каталога, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`protected catagoryElement: HTMLElement` — элемент для отображения категории.
+`protected imageElement: HTMLImageElement` — элемент для отображения изображения.
+`protected descriptionElement: HTMLElement` — элемент для отображения описания.
+`protected cardButton: HTMLButtonElement` — кнопка для добавления товара в корзину.
+`protected events: IEvents` — объект для эмитирования и обработки событий.
+`protected container: HTMLElement` — контейнер для карточки.
+
+Методы:
+`set image(src: string)` — задает изображение товара.
+`set category(value: string)` — устанавливает название категории и добавляет CSS-класс согласно categoryMap.
+`set description(value: string)` — обновляет описание товара.
+
+## Класс Form
+Управляет формой с возможностью отображения ошибок и обработкой пользовательского ввода.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр формы, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`protected errorElement: HTMLElement` — элемент для отображения ошибок формы.
+`protected submitButton: HTMLButtonElement` — кнопка для отправки формы.
+`protected actionsElement: HTMLElement` — контейнер для действий - кнопки и поля вывода ошибок.
+`protected formInput: HTMLInputElement` — поле ввода формы.
+`protected events: IEvents` — объект для генерации и обработки событий.
+`protected container: HTMLElement` — корневой контейнер формы.
+
+Методы:
+`set errors(value: string)` — обновляет текст ошибок в интерфейсе.
+
+## Класс FormOrder
+Расширяет базовую форму, добавляя кнопку для выбора способа оплаты и генерируя событие при её нажатии. Форма заполнения оплаты и адреса доставки
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр формы заказа, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`protected paymentButton: HTMLButtonElement` — кнопки для выбора способа оплаты.
+`protected events: IEvents` — объект для работы с событиями (унаследовано).
+`protected container: HTMLElement` — контейнер формы (унаследовано).
+
+## Класс Gallery
+Управляет отображением галереи элементов, заменяя содержимое по заданному списку элементов.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр галереи, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`private catalogElement: HTMLElement` — элемент, содержащий галерейные карточки или элементы.
+
+Методы:
+`set catalog(elements: HTMLElement[])` — заменяет содержимое галереи, используя переданный массив элементов.
+
+## Класс Header
+Управляет верхней панелью (шапкой) сайта, в частности, отображением количества товаров в корзине и кнопкой открытия корзины.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр шапки, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`private basketButton: HTMLButtonElement` — кнопка открытия корзины.
+`private countElement: HTMLElement` — элемент для отображения количества товаров в корзине.
+`protected events: IEvents` — объект для генерации и обработки событий.
+`protected container: HTMLElement` — контейнер шапки.
+
+Методы:
+`set counter(value: number)` — обновляет отображение количества товаров в корзине.
+
+## Класс ModalContainer
+Обеспечивает управление модальным окном — отображение контента и закрытие.
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр модального окна, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`private closeButton: HTMLButtonElement` — кнопка закрытия модального окна.
+`private contentElement: HTMLElement` — элемент, в который помещается содержимое модального окна.
+`protected events: IEvents` — объект для генерирования событий.
+`protected container: HTMLElement` — контейнер модального окна.
+
+Методы:
+`set content(value: HTMLElement)` — задает содержимое модального окна, заменяя текущий контент.
+
+## Класс Success
+Компонент для отображения экрана успешного завершения заказа, показывает количество списанных «синапсов».
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр компонента, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`private descriptionElement: HTMLElement` — элемент для вывода сообщения о количестве списанных единиц (синапсов).
+`protected events: IEvents` — объект управления событиями (унаследован).
+`protected container: HTMLElement` — контейнер компонента (унаследован).
+
+Методы:
+`set count(value: number)` — обновляет сообщение с числом списанных синапсов.

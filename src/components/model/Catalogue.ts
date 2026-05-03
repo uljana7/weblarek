@@ -1,10 +1,11 @@
 import { Item } from "../../types";
+import { EventList, IEvents } from "../base/Events";
 
 export class Catalogue{
   protected items: Item[];
   protected choosenCard: Item|null;
 
-  constructor(){
+  constructor(protected events: IEvents){
     this.items = [];
     this.choosenCard = null;
   }
@@ -15,6 +16,8 @@ export class Catalogue{
 
   public setChoosenCard(itemToSave: Item){
     this.choosenCard = itemToSave;
+    this.events.emit(EventList.OpenCard);
+
   }
 
   public getChoosenCard(): Item|null{
