@@ -5,16 +5,22 @@ import { Form } from "./Form";
 
 
 export class FormOrder extends Form{
-  protected paymentButton: HTMLButtonElement;
+  protected paymentButtons: HTMLButtonElement[];
+  protected formInput: HTMLInputElement;
+
 
   constructor(protected events: IEvents, container: HTMLElement){
     super(events, container);
 
-    this.paymentButton = ensureElement<HTMLButtonElement>('.button_alt', this.container);
-
+    this.paymentButtons = [ensureElement<HTMLButtonElement>('.button_alt[name="card"]', this.container),ensureElement<HTMLButtonElement>('.button_alt[name="cash"]', this.container)];
+    this.formInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container)
     
-    this.paymentButton.addEventListener('click', ()=> {
+    this.paymentButtons.forEach(button => button.addEventListener('click', ()=> {
       this.events.emit('form:paymentChoosen');
+    }))
+    this.formInput.addEventListener('change', () => {
+      this.events.emit('form:input');
+
     })
   }
 

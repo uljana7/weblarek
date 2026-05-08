@@ -3,7 +3,7 @@ import { IEvents } from "../base/Events";
 import { Card } from "./Card";
 import { categoryMap } from "../../utils/constants";
 
-export class CardCatalog extends Card{
+export class CardPreview extends Card{
   protected catagoryElement: HTMLElement;
   protected imageElement: HTMLImageElement;
   protected descriptionElement: HTMLElement;

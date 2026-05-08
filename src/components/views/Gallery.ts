@@ -12,11 +12,12 @@ export class Gallery extends Component<IGallery>{
   constructor(protected events: IEvents, container: HTMLElement){
     super(container);
 
-    this.catalogElement = ensureElement<HTMLElement>('.gallery', this.container);   
+    this.catalogElement = this.container;   
   }
 
   set catalog(elements: HTMLElement[]){
     this.catalogElement.replaceChildren(...elements);
+    this.events.emit('catalog:change');
   }
 
 }

@@ -26,6 +26,7 @@ export class Catalogue{
 
   public setItems(itemsToSave: Item[]){
     this.items = itemsToSave;
+    this.events.emit(EventList.CatalogueChange)
   }
 
   public getItemById(id: string): Item | undefined {

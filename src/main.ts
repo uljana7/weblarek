@@ -5,72 +5,130 @@ import { Buyer } from './components/model/Buyer';
 import { Catalogue } from './components/model/Catalogue';
 import { apiProducts } from './utils/data';
 import {ApiInteraction} from './components/model/ApiInteraction.ts';
-import { API_URL } from './utils/constants.ts';
+import { API_URL, CDN_URL } from './utils/constants.ts';
 import { Api } from './components/base/Api.ts';
-
-//фейковые данные для тестирования класса покупателя
-const testBuyerData: BuyerInterface = {
-  payment: 'card',
-  address: 'Москва, ул. Ленина, д. 10, кв. 5',
-  email: 'example@mail.com',
-  phone: '+79001234567'
-};
-
-
-//тестирование класса корзины
-const testBasket = new Basket();
-testBasket.addItem(apiProducts.items[0])
-testBasket.addItem(apiProducts.items[1])
-testBasket.addItem(apiProducts.items[2])
-testBasket.addItem(apiProducts.items[3])
-console.log('добавили в корзину 4 элемента', testBasket.getItems().slice());
-testBasket.deleteItem(apiProducts.items[1].id)
-console.log('После удаления оного элемента', testBasket.getItems().slice());
-console.log('Есть ли час в сутках в корзине', testBasket.isItemInBasket(apiProducts.items[0].id));
-console.log('Сумарная стоимость товаров',testBasket.getFullPrice())
-console.log('колличество товаров в корзине ', testBasket.getTotalItemsCount())
-console.log('поиск товара по реальному айди', testBasket.isItemInBasket(apiProducts.items[0].id))
-console.log('поиск товара по несуществующему айди', testBasket.isItemInBasket('12345'))
+import { EventEmitter, IEvents } from './components/base/Events.ts';
+import { CardBasket } from './components/views/CardBasket.ts';
+import { CardCatalog } from './components/views/CardCatalog.ts';
+import { CardPreview } from './components/views/CardPreview.ts';
+import { Form } from './components/views/Form.ts';
+import { FormOrder } from './components/views/FormOrder.ts';
+import { Gallery } from './components/views/Gallery.ts';
+import { Header } from './components/views/Header.ts';
+import { ModalContainer } from './components/views/ModalContainer.ts';
+import { Success } from './components/views/Success.ts';
+import { Basket as BasketView} from './components/views/Basket.ts';
+import { ensureElement, cloneTemplate } from './utils/utils.ts';
+import { FormContact } from './components/views/FormContact.ts';
+import { EventList } from './components/base/Events.ts';
 
 
-//тестирование класса покупателя
-const testBuyer = new Buyer();
-testBuyer.saveData(testBuyerData)
-console.log('созданный покупатель',testBuyer.getAllData())
-console.log('ошибки валидации полей: ',testBuyer.validateAdress(), ',', testBuyer.validateEmail(), ',', testBuyer.validatePayment(), ',', testBuyer.validatePhone())
-testBuyer.saveData({payment: '', address:'', email:'', phone:''})
-console.log('попытались записать данные с ошибками:', testBuyer.getAllData())
-console.log('ошибки валидации полей: ',testBuyer.validateAdress(), ',', testBuyer.validateEmail(), ',', testBuyer.validatePayment(), ',', testBuyer.validatePhone())
-testBuyer.clearFields();
-console.log('очистили поля', testBuyer.getAllData())
+class Presenter{
 
-//тестирование класса католога
-const testCatalogue = new Catalogue();
-testCatalogue.setItems(apiProducts.items)
-console.log('список товаров в каталоге', testCatalogue.getItems())
-testCatalogue.setChoosenCard(apiProducts.items[2])
-console.log('выбранный товар', testCatalogue.getChoosenCard())
-console.log('поиск товара по реальному айди', testCatalogue.getItemById(apiProducts.items[0].id))
-console.log('поиск товара по несуществующему айди', testCatalogue.getItemById('12345'))
+  private basketView: BasketView;
+  private cardBasket: CardBasket;
+  private cardCatalog: CardCatalog;
+  private cardPreview: CardPreview;
+  //private form: Form;
+  private formOrder: FormOrder;
+  private formContact: FormContact;
+  private gallery: Gallery;
+  private header: Header;
+  private modalContainer: ModalContainer;
+  private success: Success;
 
-//тестирование работы с сервером
-const api = new Api(API_URL);
-const testApi = new ApiInteraction(api);
-const testApiCatalog = new Catalogue()
-testApi.getProducts().then((result) => {
-    console.log('Сырые данные с сервера:', result)
-    if (result && result.items) {
-      try {
-        testApiCatalog.setItems(result.items);
-        console.log( 'извлеченные данные: ',JSON.stringify(testApiCatalog.getItems())
-        )
-      } catch (error) {
-        console.error('ошибка извлечения данных', error)
+  private basket: Basket;
+  private buyer: Buyer;
+  private catalog: Catalogue;
+  private api: Api;
+  private events: EventEmitter;
+
+  constructor(){
+    this.events = new EventEmitter();
+    const basketContainer = cloneTemplate('#basket')
+    this.basketView = new BasketView(this.events, basketContainer);
+    const cardBacketContainer = cloneTemplate('#card-basket')
+    this.cardBasket = new CardBasket(this.events, cardBacketContainer);
+    const cardCatalogContainer = cloneTemplate('#card-catalog')
+    this.cardCatalog = new CardCatalog(this.events, cardCatalogContainer);
+    const cardPreviewContainer = cloneTemplate('#card-preview')
+    this.cardPreview = new CardPreview(this.events, cardPreviewContainer);
+    //const backetContainer = cloneTemplate('#basket')
+    //this.form = new Form(this.events);
+    const formOrderContainer = cloneTemplate('#order')
+    this.formOrder = new FormOrder(this.events, formOrderContainer);
+    const formContactContainer = cloneTemplate('#contacts')
+    this.formContact = new FormContact(this.events, formContactContainer);
+    
+    const headerContainer = ensureElement<HTMLElement>('.header')
+    this.header = new Header(this.events, headerContainer);
+    
+    const modalContainerContainer = ensureElement<HTMLElement>('.modal')
+    this.modalContainer = new ModalContainer(this.events, modalContainerContainer);
+    const successContainer = cloneTemplate('#success')
+    this.success = new Success(this.events, successContainer);
+    const galleryContainer = ensureElement<HTMLElement>('.gallery')
+    this.gallery = new Gallery(this.events, galleryContainer);
+    
+    this.basket = new Basket(this.events);
+    this.buyer = new Buyer(this.events);
+    this.catalog = new Catalogue(this.events);
+    this.api = new Api(API_URL);
+
+    this.getServerData()
+    this.header.render();
+    this.gallery.render();
+    this.events.on('catalog:change', () => {
+      this.gallery.catalog = this.catalog.getItems().map((item) => {
+        const cardTemplate = cloneTemplate('#card-catalog')
+        return new CardCatalog(this.events, cardTemplate).render({
+          category: item.category,
+          title: item.title,
+          price: item.price,
+          image: CDN_URL + item.image,
+        })
+      })
+    })
+ //this.onLoadProducts.bind(this));
+
+  }
+
+  getServerData(){
+    const testApi = new ApiInteraction(this.api);
+    testApi.getProducts().then((result) => {
+      console.log('Сырые данные с сервера:', result)
+      if (result && result.items) {
+        try {
+          this.catalog.setItems(result.items);
+          console.log( 'извлеченные данные: ',JSON.stringify(this.catalog.getItems())
+          )
+        } catch (error) {
+          console.error('ошибка извлечения данных', error)
+        }
+      } else {
+        console.error('ошибка в получении данных')
       }
-    } else {
-      console.error('ошибка в получении данных')
-    }
-  })
-  .catch((error) => {
-    console.error('ошибка в работе сервера',error)
-  })
+    })
+    .catch((error) => {
+      console.error('ошибка в работе сервера',error)
+    })
+  }
+
+  onLoadProducts() {
+    // 1. Получить массив товаров из модели
+    /*const products = this.catalog.getItems(); 
+    const cardCatalogContainer = cloneTemplate('#card-catalog')
+    // 2. Создать карточки
+    const cards = products.map(product => {
+      // создаем экземпляр карточки
+      const card = new CardCatalog(this.events, cardCatalogContainer );
+      // получаем DOM-элемент карточки
+      return card.render();
+    });
+    this.gallery.catalog = cards;//this.gallery.render(cards);
+    this.gallery.render();*/
+  }
+}
+
+
+const presenter = new Presenter();

@@ -16,7 +16,8 @@ export enum EventList {
     InputForm = 'form:input',
     FormPaymentChoosen = 'form:paymentChoosen',
     OpenBasket = 'basket:open',
-    ModalClose = 'modal:close'
+    ModalClose = 'modal:close',
+    CatalogueChange = 'catalog:change'
 }
 
 export interface IEvents {
