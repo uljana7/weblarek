@@ -1,26 +1,30 @@
 import { ensureElement } from "../../utils/utils";
-import { IEvents } from "../base/Events";
+import { EventEmitter, IEvents } from "../base/Events";
 import { Card } from "./Card";
 import { categoryMap } from "../../utils/constants";
+
+interface Action{
+  onClick(): void
+}
 
 export class CardCatalog extends Card{
   protected catagoryElement: HTMLElement;
   protected imageElement: HTMLImageElement;
 
-  constructor( events: IEvents, container: HTMLElement){
+  constructor( events: IEvents, container: HTMLElement, onClick?: Action){
     super(events, container);
 
     this.catagoryElement = ensureElement<HTMLElement>('.card__category', this.container);   
     this.imageElement = ensureElement<HTMLImageElement>('.card__image', this.container);   
 
-    this.container.addEventListener('click', ()=> {
-      this.events.emit('card:open');
-    })
+    if(onClick?.onClick){
+      this.container.addEventListener('click', onClick.onClick)
+    }
+    
   }
 
   set image(src: string){
-    this.imageElement.src = src;
-    //this.setImage(this.imageElement, src, alt)
+    this.setImage(this.imageElement, src, this.title)
   }
 
   set category(value: string){

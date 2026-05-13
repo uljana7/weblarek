@@ -303,7 +303,20 @@ Presenter - презентер содержит основную логику п
 `constructor(events: IEvents, container: HTMLElement)` — создает экземпляр формы заказа, принимает объект событий и контейнер DOM.
 
 Поля класса:
-`protected paymentButton: HTMLButtonElement` — кнопки для выбора способа оплаты.
+`protected paymentButtons: HTMLButtonElement[]` — кнопки для выбора способа оплаты.
+`protected formInput: HTMLInputElement` - поле ввода адреса
+`protected events: IEvents` — объект для работы с событиями (унаследовано).
+`protected container: HTMLElement` — контейнер формы (унаследовано).
+
+## Класс FormContact
+Расширяет базовую форму, добавляя поля ввода данных покупателя. 
+
+Конструктор:
+`constructor(events: IEvents, container: HTMLElement)` — создает экземпляр формы заказа, принимает объект событий и контейнер DOM.
+
+Поля класса:
+`protected formInputEmail: HTMLInputElement` - поле ввода почты
+`protected formInputPhone: HTMLInputElement` - поле ввода телефона
 `protected events: IEvents` — объект для работы с событиями (унаследовано).
 `protected container: HTMLElement` — контейнер формы (унаследовано).
 

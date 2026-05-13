@@ -14,7 +14,7 @@ export interface Item{
   category: string,
   price: number|null,
   description: string
-  
+  index?: string
 };
 
 export interface BuyerInterface{

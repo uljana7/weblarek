@@ -26,25 +26,25 @@ export class Buyer {
   saveData(data: Partial<BuyerInterface>): void {
     if (data.payment !== undefined) {
       this.payment = data.payment;
-      this.events.emit(EventList.FormPaymentChoosen);
+      //this.events.emit(EventList.FormPaymentChoosen);
 
     }
 
     if (data.address !== undefined) {
       this.address = data.address;
-      this.events.emit(EventList.InputForm);
+      //this.events.emit(EventList.InputForm);
 
     }
 
     if (data.email !== undefined) {
       this.email = data.email;
-      this.events.emit(EventList.InputForm);
+      //this.events.emit(EventList.InputForm);
 
     }
 
     if (data.phone !== undefined) {
       this.phone = data.phone;
-      this.events.emit(EventList.InputForm);
+      //this.events.emit(EventList.InputForm);
 
     }
   }

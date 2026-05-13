@@ -21,6 +21,7 @@ import { Basket as BasketView} from './components/views/Basket.ts';
 import { ensureElement, cloneTemplate } from './utils/utils.ts';
 import { FormContact } from './components/views/FormContact.ts';
 import { EventList } from './components/base/Events.ts';
+import { Item, Payment } from './types';
 
 
 class Presenter{
@@ -78,10 +79,11 @@ class Presenter{
     this.getServerData()
     this.header.render();
     this.gallery.render();
+
     this.events.on('catalog:change', () => {
       this.gallery.catalog = this.catalog.getItems().map((item) => {
         const cardTemplate = cloneTemplate('#card-catalog')
-        return new CardCatalog(this.events, cardTemplate).render({
+        return new CardCatalog(this.events, cardTemplate, {onClick: () => this.events.emit(EventList.CatalogSaveChoosenCard, item)}).render({
           category: item.category,
           title: item.title,
           price: item.price,
@@ -89,10 +91,124 @@ class Presenter{
         })
       })
     })
- //this.onLoadProducts.bind(this));
 
+    this.events.on('catalog:chooseCard', (item: Item) => {
+      this.catalog.setChoosenCard(item)
+      console.log('событие сохранения карточки произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+    })
+
+    this.events.on(EventList.OpenCard, () => {
+      console.log('событие открытия карточки произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+      const item = this.catalog.getChoosenCard();
+      //this.catalog.setChoosenCard(item);
+      if(item === null) { return;}
+      const productCardToShow = this.cardPreview.render({
+        title: item.title,
+        price: item.price,
+        category: item.category,
+        image: CDN_URL + item.image,
+        description: item.description,
+      })
+      const isAddedToCart = this.basket.isItemInBasket(item.id)
+      console.log(isAddedToCart)
+      this.cardPreview.activateBuyButton(isAddedToCart)
+      this.modalContainer.open()
+      this.modalContainer.render({content: productCardToShow})
+    })
+
+    this.events.on('modal:close', () => {
+      console.log('событие закрытия модалки произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+      this.modalContainer.close();
+      this.header.render({counter: this.basket.getItems().length})
+    })
+
+    this.events.on('item:addToCard', ()=>{
+      console.log('событие добавления в корзину произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+      
+      const item = this.catalog.getChoosenCard();
+      if(item===null){return};
+      const isAddedToCart = this.basket.isItemInBasket(item.id);
+      if(isAddedToCart){
+        this.basket.deleteItem(item.id)
+      }
+      else{
+        this.basket.addItem(item)
+      }
+      this.events.emit('modal:close');
+    })
+
+    this.events.on('basket:open', ()=>{
+      console.log('событие открытия козины произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+      this.basketView.basketItems = this.basket.getItems().map((item, index) => {
+        const cardTemplate = cloneTemplate('#card-basket')
+        return new CardBasket(this.events, cardTemplate, {onClick: () => this.events.emit(EventList.DeleteItemFromCard, item)}).render({
+          title: item.title,
+          price: item.price,
+          index: String(index+1),
+        })
+
+      })
+      this.basketView.buttonActivate(this.basket.getItems().length)
+      this.modalContainer.open()
+      this.modalContainer.render({content: this.basketView.render({price: this.basket.getFullPrice()})})
+    })
+
+    this.events.on('item:deleteFromCard', (itemToRemove: Item)=>{
+      this.basket.deleteItem(itemToRemove.id);
+      console.log('событие удаления товара из корзины произошло', this.basket.getItems())
+      this.basketView.basketItems = this.basket.getItems().map((item, index) => {
+        const cardTemplate = cloneTemplate('#card-basket')
+        return new CardBasket(this.events, cardTemplate, {onClick: () => this.events.emit(EventList.DeleteItemFromCard, item)}).render({
+          title: item.title,
+          price: item.price,
+          index: String(index+1),
+        })
+
+      })
+      this.basketView.buttonActivate(this.basket.getItems.length)
+      this.basketView.render({price: this.basket.getFullPrice()})
+    })
+
+    this.events.on('order:make', ()=>{
+      this.modalContainer.render({content: this.formOrder.render()})
+      console.log('событие открытия формы оформления заказа произошло')
+    })
+
+    this.events.on('form:paymentChoosen', (button: HTMLButtonElement)=>{
+      const pay = button.name as Payment
+      this.buyer.saveData({payment: pay})
+      this.formOrder.errors = this.buyer.validatePayment()
+      console.log('событие выбора способа оплаты произошло', this.buyer)
+      this.events.emit('formOrder:validate')
+    })
+
+    this.events.on('form:input', (input: HTMLInputElement)=>{
+      this.buyer.saveData({address: input.value})
+      this.formOrder.errors = this.buyer.validateAdress()
+      console.log('событие ввода адреса произошло', this.buyer)
+      this.events.emit('formOrder:validate')
+    })
+
+    this.events.on('formOrder:validate', ()=>{
+      if(this.buyer.getAllData().payment && this.buyer.getAllData().address 
+        && (this.formOrder.errors === '' 
+        || this.formOrder.errors === undefined)){
+        this.formOrder.activateNextButton(true)
+      }
+      else{
+        this.formOrder.activateNextButton(false)       
+      }
+    })
+
+    this.events.on('formContact:show', ()=>{
+      this.modalContainer.render({content: this.formContact.render()})
+      console.log('событие открытия формы заполнения контактов произошло')
+    })
   }
 
+  
+
+  
   getServerData(){
     const testApi = new ApiInteraction(this.api);
     testApi.getProducts().then((result) => {
@@ -114,20 +230,6 @@ class Presenter{
     })
   }
 
-  onLoadProducts() {
-    // 1. Получить массив товаров из модели
-    /*const products = this.catalog.getItems(); 
-    const cardCatalogContainer = cloneTemplate('#card-catalog')
-    // 2. Создать карточки
-    const cards = products.map(product => {
-      // создаем экземпляр карточки
-      const card = new CardCatalog(this.events, cardCatalogContainer );
-      // получаем DOM-элемент карточки
-      return card.render();
-    });
-    this.gallery.catalog = cards;//this.gallery.render(cards);
-    this.gallery.render();*/
-  }
 }
 
 

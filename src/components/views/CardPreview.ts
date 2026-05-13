@@ -17,14 +17,14 @@ export class CardPreview extends Card{
     this.descriptionElement = ensureElement<HTMLElement>('.card__text', this.container);
     this.cardButton = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
+
     this.cardButton.addEventListener('click', ()=> {
       this.events.emit('item:addToCard');
     })
   }
 
   set image(src: string){
-    this.imageElement.src = src;
-    //this.setImage(this.imageElement, src, alt)
+    this.setImage(this.imageElement, src, this.title)
   }
 
   set category(value: string){
@@ -40,4 +40,21 @@ export class CardPreview extends Card{
     this.descriptionElement.textContent = value;
   }
 
+  activateBuyButton(added: boolean){
+    if(this.priceElement.textContent === 'Бесценно'){//проверка на бесценность
+      this.cardButton.textContent = 'Недоступно';
+      this.cardButton.disabled = true;
+    }
+    else{
+      this.cardButton.textContent = 'Купить';
+      this.cardButton.disabled = false;
+    }
+
+    if(added){//проверка на нахождение в корзине
+      this.cardButton.textContent = 'Удалить из корзины'
+    }
+    else{
+      this.cardButton.textContent = 'Купить';
+    }
+  }
 }

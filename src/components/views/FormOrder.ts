@@ -1,6 +1,7 @@
 import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/Events";
 import { Form } from "./Form";
+import { Payment } from "../../types";
 
 
 
@@ -16,12 +17,18 @@ export class FormOrder extends Form{
     this.formInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container)
     
     this.paymentButtons.forEach(button => button.addEventListener('click', ()=> {
-      this.events.emit('form:paymentChoosen');
+      this.events.emit('form:paymentChoosen', button);
     }))
     this.formInput.addEventListener('change', () => {
-      this.events.emit('form:input');
-
+      this.events.emit('form:input', this.formInput);
     })
+    this.submitButton.addEventListener('click', ()=> {
+      this.events.emit('formContact:show');
+    })
+  }
+
+  activateNextButton(switcher:boolean){
+    this.submitButton.disabled = !switcher;
   }
 
 

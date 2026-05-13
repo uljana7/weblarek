@@ -12,12 +12,14 @@ export enum EventList {
     DeleteItemFromCard = 'item:deleteFromCard',
     OpenCard = 'card:open',
     AddItemToCard = 'item:addToCard',
-    OpenNextForm = 'form:next',
+    OpenFormContact = 'formContact:show',
     InputForm = 'form:input',
     FormPaymentChoosen = 'form:paymentChoosen',
     OpenBasket = 'basket:open',
     ModalClose = 'modal:close',
-    CatalogueChange = 'catalog:change'
+    CatalogueChange = 'catalog:change',
+    CatalogSaveChoosenCard = 'catalog:chooseCard',
+    FormOrderValidation = 'formOrder:validate'
 }
 
 export interface IEvents {

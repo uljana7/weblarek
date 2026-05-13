@@ -25,4 +25,11 @@ export class ModalContainer extends Component<IModal>{
     this.contentElement.replaceChildren(value);
   }
 
+  open(){
+    this.container.classList.add('modal_active')
+  }
+
+  close(){
+    this.container.classList.remove('modal_active');
+  }
 }

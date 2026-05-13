@@ -11,12 +11,12 @@ export class Basket{
 
   addItem(itemToAdd:Item):void{
     this.items.push(itemToAdd);
-    this.events.emit(EventList.AddItemToCard);
+    //this.events.emit(EventList.AddItemToCard);
   }
 
   deleteItem(itemId: string): void {
     this.items = this.items.filter(item => item.id !== itemId);
-    this.events.emit(EventList.DeleteItemFromCard);
+    //this.events.emit(EventList.DeleteItemFromCard);
 
   }
 
