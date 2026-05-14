@@ -27,10 +27,7 @@ import { Item, Payment } from './types';
 class Presenter{
 
   private basketView: BasketView;
-  private cardBasket: CardBasket;
-  private cardCatalog: CardCatalog;
   private cardPreview: CardPreview;
-  //private form: Form;
   private formOrder: FormOrder;
   private formContact: FormContact;
   private gallery: Gallery;
@@ -48,20 +45,13 @@ class Presenter{
   constructor(){
     this.events = new EventEmitter();
     const basketContainer = cloneTemplate('#basket')
-    this.basketView = new BasketView(this.events, basketContainer);
-    const cardBacketContainer = cloneTemplate('#card-basket')
-    this.cardBasket = new CardBasket(this.events, cardBacketContainer);
-    const cardCatalogContainer = cloneTemplate('#card-catalog')
-    this.cardCatalog = new CardCatalog(this.events, cardCatalogContainer);
+    this.basketView = new BasketView(this.events, basketContainer);    
     const cardPreviewContainer = cloneTemplate('#card-preview')
     this.cardPreview = new CardPreview(this.events, cardPreviewContainer);
-    //const backetContainer = cloneTemplate('#basket')
-    //this.form = new Form(this.events);
     const formOrderContainer = cloneTemplate('#order')
     this.formOrder = new FormOrder(this.events, formOrderContainer);
     const formContactContainer = cloneTemplate('#contacts')
     this.formContact = new FormContact(this.events, formContactContainer);
-    
     const headerContainer = ensureElement<HTMLElement>('.header')
     this.header = new Header(this.events, headerContainer);
     
@@ -186,7 +176,7 @@ class Presenter{
 
     this.events.on('form:input', (input: HTMLInputElement)=>{
       this.buyer.saveData({[input.name]: input.value})
-      console.log('событие ввода адреса произошло', this.buyer)
+      console.log('событие ввода поля произошло', this.buyer)
       if(input.name === 'address'){
         this.formOrder.errors = this.buyer.validateAdress() + this.buyer.validatePayment()
         this.events.emit('formOrder:validate')
@@ -240,9 +230,6 @@ class Presenter{
     })
   }
 
- 
-
-  
   getServerData(){
     
     this.apiInteraction.getProducts().then((result) => {
