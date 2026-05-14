@@ -18,15 +18,19 @@ export class FormContact extends Form{
 
   
     this.formInputEmail.addEventListener('change', () => {
-      this.events.emit('form:input');
-
+      this.events.emit('form:input', this.formInputEmail);
     })
     this.formInputPhone.addEventListener('change', () => {
-      this.events.emit('form:input');
-
+      this.events.emit('form:input', this.formInputPhone);
     })
+    this.submitButton.addEventListener('click', ()=> {
+      this.events.emit('order:finish');
+    })
+    
   }
 
-
+  activateNextButton(switcher:boolean){
+    this.submitButton.disabled = !switcher;
+  }
 
 }

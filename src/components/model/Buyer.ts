@@ -26,32 +26,21 @@ export class Buyer {
   saveData(data: Partial<BuyerInterface>): void {
     if (data.payment !== undefined) {
       this.payment = data.payment;
-      //this.events.emit(EventList.FormPaymentChoosen);
-
     }
-
     if (data.address !== undefined) {
       this.address = data.address;
-      //this.events.emit(EventList.InputForm);
-
     }
-
     if (data.email !== undefined) {
       this.email = data.email;
-      //this.events.emit(EventList.InputForm);
-
     }
-
     if (data.phone !== undefined) {
       this.phone = data.phone;
-      //this.events.emit(EventList.InputForm);
-
     }
   }
 
   validatePayment():string{
     if(!this.payment.trim()){
-      return 'не выбран способ оплаты'
+      return ' не выбран способ оплаты'
     }
     else{
       return ''
@@ -60,7 +49,7 @@ export class Buyer {
 
   validateAdress():string{
     if(!this.address.trim()){
-      return 'не указан адрес'
+      return ' не указан адрес'
     }
     else {
       return ''
@@ -69,7 +58,7 @@ export class Buyer {
 
   validateEmail():string{
     if(!this.email.trim()){
-      return 'не указан эмейл';
+      return ' не указан эмейл';
     }
     else {
       return ''
@@ -78,7 +67,7 @@ export class Buyer {
 
   validatePhone():string{
     if(!this.phone.trim()) {
-      return 'не указан номер телефона';
+      return ' не указан номер телефона';
     }
     else{
       return ''

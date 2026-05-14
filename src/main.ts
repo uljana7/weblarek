@@ -41,6 +41,7 @@ class Presenter{
   private basket: Basket;
   private buyer: Buyer;
   private catalog: Catalogue;
+  private apiInteraction: ApiInteraction;
   private api: Api;
   private events: EventEmitter;
 
@@ -75,6 +76,7 @@ class Presenter{
     this.buyer = new Buyer(this.events);
     this.catalog = new Catalogue(this.events);
     this.api = new Api(API_URL);
+    this.apiInteraction = new ApiInteraction(this.api)
 
     this.getServerData()
     this.header.render();
@@ -177,16 +179,23 @@ class Presenter{
     this.events.on('form:paymentChoosen', (button: HTMLButtonElement)=>{
       const pay = button.name as Payment
       this.buyer.saveData({payment: pay})
-      this.formOrder.errors = this.buyer.validatePayment()
+      this.formOrder.errors = this.buyer.validatePayment() + this.buyer.validateAdress()
       console.log('событие выбора способа оплаты произошло', this.buyer)
       this.events.emit('formOrder:validate')
     })
 
     this.events.on('form:input', (input: HTMLInputElement)=>{
-      this.buyer.saveData({address: input.value})
-      this.formOrder.errors = this.buyer.validateAdress()
+      this.buyer.saveData({[input.name]: input.value})
       console.log('событие ввода адреса произошло', this.buyer)
-      this.events.emit('formOrder:validate')
+      if(input.name === 'address'){
+        this.formOrder.errors = this.buyer.validateAdress() + this.buyer.validatePayment()
+        this.events.emit('formOrder:validate')
+      }
+      else if(input.name === 'phone' || input.name === 'email'){
+        this.formContact.errors = this.buyer.validatePhone() + this.buyer.validateEmail()
+        this.events.emit('formContact:validate')
+      }
+      
     })
 
     this.events.on('formOrder:validate', ()=>{
@@ -198,20 +207,45 @@ class Presenter{
       else{
         this.formOrder.activateNextButton(false)       
       }
+      console.log('событие валидации заказа произошло')
+    })
+
+    this.events.on('formContact:validate', ()=>{
+      if(this.buyer.getAllData().phone && this.buyer.getAllData().email 
+        && (this.formContact.errors === '' 
+        || this.formContact.errors === undefined)){
+        this.formContact.activateNextButton(true)
+      }
+      else{
+        this.formContact.activateNextButton(false)       
+      }
+      console.log('событие валидации контактов произошло')
+
     })
 
     this.events.on('formContact:show', ()=>{
       this.modalContainer.render({content: this.formContact.render()})
       console.log('событие открытия формы заполнения контактов произошло')
     })
+    
+    this.events.on('order:finish', ()=>{
+      this.success.count = this.basket.getFullPrice()
+      this.apiInteraction.postOrder({ ...this.buyer.getAllData(), total: this.basket.getFullPrice(), items: this.basket.getItems().map((item) => item.id)})
+      this.modalContainer.render({content: this.success.render()});
+      this.buyer.clearFields();
+      this.basket.getItems().forEach((item)=>{
+        this.basket.deleteItem(item.id)
+      })
+      console.log('событие завершения заказа произошло', this.basket, this.buyer)
+    })
   }
 
-  
+ 
 
   
   getServerData(){
-    const testApi = new ApiInteraction(this.api);
-    testApi.getProducts().then((result) => {
+    
+    this.apiInteraction.getProducts().then((result) => {
       console.log('Сырые данные с сервера:', result)
       if (result && result.items) {
         try {

@@ -19,7 +19,8 @@ export enum EventList {
     ModalClose = 'modal:close',
     CatalogueChange = 'catalog:change',
     CatalogSaveChoosenCard = 'catalog:chooseCard',
-    FormOrderValidation = 'formOrder:validate'
+    FormOrderValidation = 'formOrder:validate',
+    FormContactValidation = 'formContact:validate'
 }
 
 export interface IEvents {

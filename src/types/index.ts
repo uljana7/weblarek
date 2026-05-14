@@ -26,7 +26,7 @@ export interface BuyerInterface{
 
 export interface Order extends BuyerInterface{
   total: number,
-  items: Item[]
+  items: string[]
 }
 
 export interface OrderResponse {

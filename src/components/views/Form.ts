@@ -24,4 +24,9 @@ export class Form extends Component<IForm>{
     this.errorElement.textContent = value;
   }
 
+  get errors(){
+    return this.errorElement.textContent
+  }
+  
+
 }
