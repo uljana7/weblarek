@@ -16,7 +16,7 @@ export class Catalogue{
 
   public setChoosenCard(itemToSave: Item){
     this.choosenCard = itemToSave;
-    this.events.emit(EventList.OpenCard);
+    this.events.emit('catalogue:savedItemChanged');
 
   }
 
@@ -26,7 +26,7 @@ export class Catalogue{
 
   public setItems(itemsToSave: Item[]){
     this.items = itemsToSave;
-    this.events.emit(EventList.CatalogueChange)
+    this.events.emit(EventList.CatalogueChanged)
   }
 
   public getItemById(id: string): Item | undefined {

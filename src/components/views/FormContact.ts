@@ -17,11 +17,11 @@ export class FormContact extends Form{
     this.formInputPhone = ensureElement<HTMLInputElement>("input[name='phone']", this.container)
 
   
-    this.formInputEmail.addEventListener('change', () => {
-      this.events.emit('form:input', this.formInputEmail);
+    this.formInputEmail.addEventListener('input', () => {
+      this.events.emit('form:input', {vieldName: this.formInputEmail.name, vieldValue: this.formInputEmail.value});
     })
-    this.formInputPhone.addEventListener('change', () => {
-      this.events.emit('form:input', this.formInputPhone);
+    this.formInputPhone.addEventListener('input', () => {
+      this.events.emit('form:input', {vieldName: this.formInputPhone.name, vieldValue: this.formInputPhone.value});
     })
     this.submitButton.addEventListener('click', ()=> {
       this.events.emit('order:finish');
@@ -31,6 +31,14 @@ export class FormContact extends Form{
 
   activateNextButton(switcher:boolean){
     this.submitButton.disabled = !switcher;
+  }
+
+  set phone(value:string){
+    this.formInputPhone.textContent = value;
+  }
+
+  set email(value: string){
+    this.formInputEmail.textContent = value;
   }
 
 }

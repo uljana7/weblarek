@@ -10,17 +10,20 @@ type EmitterEvent = {
 export enum EventList {
     OrderMake = 'order:make',
     DeleteItemFromCard = 'item:deleteFromCard',
-    OpenCard = 'card:open',
+    SavedItemChanged = 'catalogue:savedItemChanged',
     AddItemToCard = 'item:addToCard',
     OpenFormContact = 'formContact:show',
     InputForm = 'form:input',
     FormPaymentChoosen = 'form:paymentChoosen',
     OpenBasket = 'basket:open',
     ModalClose = 'modal:close',
-    CatalogueChange = 'catalog:change',
+    CatalogueChanged = 'catalog:changed',
     CatalogSaveChoosenCard = 'catalog:chooseCard',
     FormOrderValidation = 'formOrder:validate',
-    FormContactValidation = 'formContact:validate'
+    FormContactValidation = 'formContact:validate',
+    SuccesClosed = 'succes:close',
+    ItemDeleted = 'basket:deleteItem',
+    ItemAdded = 'basket:addItem',
 }
 
 export interface IEvents {

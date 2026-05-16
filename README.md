@@ -158,6 +158,7 @@ Presenter - презентер содержит основную логику п
 `getFullPrice(): number` — возвращает общую стоимость всех товаров в корзине, суммируя цену каждого.
 `getTotalItemsCount(): number` — возвращает количество товаров в корзине.
 `isItemInBasket(id: string): boolean` — проверяет наличие товара с указанным id в корзине. Возвращает true, если товар есть, иначе false.
+`clearBasket(): void` - очищает массив товаров
 
 ## Класс Catalogue
 Ответственный за управление каталогом товаров и выбором определённой карточки товара.
@@ -410,18 +411,22 @@ Presenter - презентер содержит основную логику п
 
 Методы:
 `getServerData()` - получение первичных данных с сервера
+`onEvents()` - установка слушателей на все события проекта
 
 # События 
 `OrderMake - 'order:make'` - открытие формы оформления ввода данных заказа
 `DeleteItemFromCard - 'item:deleteFromCard'` - удаление товара из корзины
-`OpenCard - 'card:open'` - открытие полноразмерной карточки товара
+`DeleteItemFromCard - 'item:deleteFromCard'` - открытие полноразмерной карточки товара
 `AddItemToCard - 'item:addToCard'` - добавление товара в корзину
 `OpenFormContact - 'formContact:show'` - открыта форма заполнения контактов
 `InputForm - 'form:input'` - ввод поля
 `FormPaymentChoosen - 'form:paymentChoosen'` - выбор способа оплаты
 `OpenBasket - 'basket:open'` - открытие формы корзины
 `ModalClose - 'modal:close'` - закрытие модального окна
-`CatalogueChange - 'catalog:change'` - изменение каталога
+`CatalogueChanged - 'catalog:changed'` - изменение каталога
 `CatalogSaveChoosenCard - 'catalog:chooseCard'` - запоминание выбранной карточки товара
 `FormOrderValidation - 'formOrder:validate'` - валидация формы ввода данных заказа
 `FormContactValidation - 'formContact:validate` - валидация формы ввода контактов
+`SuccesClosed - 'succes:close'` - закрытие окна окочания заказа через его кнопку
+`ItemDeleted - 'basket:deleteItem'` - обработка удаления элемента из модели данных корзины
+`ItemAdded - 'basket:addItem'` - обработка добавления элемента в модель данны корзины

@@ -26,16 +26,21 @@ export class Buyer {
   saveData(data: Partial<BuyerInterface>): void {
     if (data.payment !== undefined) {
       this.payment = data.payment;
+      this.events.emit('formOrder:validate')
     }
     if (data.address !== undefined) {
       this.address = data.address;
+      this.events.emit('formOrder:validate')
     }
     if (data.email !== undefined) {
       this.email = data.email;
+      this.events.emit('formContact:validate')
     }
     if (data.phone !== undefined) {
       this.phone = data.phone;
+      this.events.emit('formContact:validate')
     }
+    
   }
 
   validatePayment():string{
@@ -79,6 +84,8 @@ export class Buyer {
     this.address = '';
     this.email = '';
     this.phone = '';
+    this.events.emit('formContact:validate')
+    this.events.emit('formOrder:validate')
   }
     
 }

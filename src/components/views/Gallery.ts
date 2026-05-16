@@ -17,7 +17,7 @@ export class Gallery extends Component<IGallery>{
 
   set catalog(elements: HTMLElement[]){
     this.catalogElement.replaceChildren(...elements);
-    this.events.emit('catalog:change');
+    this.events.emit('catalog:changed');
   }
 
 }

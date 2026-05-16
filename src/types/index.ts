@@ -32,6 +32,7 @@ export interface Order extends BuyerInterface{
 export interface OrderResponse {
   id: string
   total: number
+  error: string
 }
 
 export interface ProductResponse {

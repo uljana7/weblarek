@@ -4,6 +4,9 @@ import { IEvents } from "../base/Events";
 
 interface IForm{
   errors: string;
+  address?:string;
+  email?:string;
+  phone?:string;
 }
 
 export class Form extends Component<IForm>{

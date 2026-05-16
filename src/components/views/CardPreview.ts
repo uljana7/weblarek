@@ -30,6 +30,9 @@ export class CardPreview extends Card{
   set category(value: string){
     this.catagoryElement.textContent = value;
 
+    //удаляем классы предыдущих открытий карточек для избежания дублирования классов, отвечающих за цвет элемента
+    this.catagoryElement.classList.value = ''
+    this.catagoryElement.classList.add('card__category')
     const categoryClass = categoryMap[value];
     if (categoryClass) {
       this.catagoryElement.classList.add(categoryClass);
@@ -40,10 +43,11 @@ export class CardPreview extends Card{
     this.descriptionElement.textContent = value;
   }
 
-  activateBuyButton(added: boolean){
-    if(this.priceElement.textContent === 'Бесценно'){//проверка на бесценность
+  activateBuyButton(priceLess: number|null, added: boolean){
+    if(priceLess === null){//this.priceElement.textContent === 'Бесценно'){//проверка на бесценность
       this.cardButton.textContent = 'Недоступно';
       this.cardButton.disabled = true;
+      return;
     }
     else{
       this.cardButton.textContent = 'Купить';

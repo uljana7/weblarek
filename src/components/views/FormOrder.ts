@@ -17,10 +17,10 @@ export class FormOrder extends Form{
     this.formInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container)
     
     this.paymentButtons.forEach(button => button.addEventListener('click', ()=> {
-      this.events.emit('form:paymentChoosen', button);
+      this.events.emit('form:paymentChoosen', { payment: button.name });
     }))
-    this.formInput.addEventListener('change', () => {
-      this.events.emit('form:input', this.formInput);
+    this.formInput.addEventListener('input', () => {
+      this.events.emit('form:input', {vieldName: this.formInput.name, vieldValue: this.formInput.value});//this.formInput);
     })
     this.submitButton.addEventListener('click', ()=> {
       this.events.emit('formContact:show');
@@ -29,6 +29,10 @@ export class FormOrder extends Form{
 
   activateNextButton(switcher:boolean){
     this.submitButton.disabled = !switcher;
+  }
+
+  set address(value: string){
+    this.formInput.textContent = value;
   }
 
 
