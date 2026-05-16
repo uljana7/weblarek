@@ -24,9 +24,9 @@ import { EventList } from './components/base/Events.ts';
 import { Item, Payment } from './types';
 
 
-class Presenter{
+//class Presenter{
 
-  private basketView: BasketView;
+  /*private basketView: BasketView;
   private cardPreview: CardPreview;
   private formOrder: FormOrder;
   private formContact: FormContact;
@@ -42,44 +42,44 @@ class Presenter{
   private api: Api;
   private events: EventEmitter;
 
-  constructor(){
-    this.events = new EventEmitter();
+  constructor(){*/
+    const events = new EventEmitter();
     const basketContainer = cloneTemplate('#basket')
-    this.basketView = new BasketView(this.events, basketContainer);    
+    const basketView = new BasketView(events, basketContainer);    
     const cardPreviewContainer = cloneTemplate('#card-preview')
-    this.cardPreview = new CardPreview(this.events, cardPreviewContainer);
+    const cardPreview = new CardPreview(events, cardPreviewContainer);
     const formOrderContainer = cloneTemplate('#order')
-    this.formOrder = new FormOrder(this.events, formOrderContainer);
+    const formOrder = new FormOrder(events, formOrderContainer);
     const formContactContainer = cloneTemplate('#contacts')
-    this.formContact = new FormContact(this.events, formContactContainer);
+    const formContact = new FormContact(events, formContactContainer);
     const headerContainer = ensureElement<HTMLElement>('.header')
-    this.header = new Header(this.events, headerContainer);
+    const header = new Header(events, headerContainer);
     
     const modalContainerContainer = ensureElement<HTMLElement>('.modal')
-    this.modalContainer = new ModalContainer(this.events, modalContainerContainer);
+    const modalContainer = new ModalContainer(events, modalContainerContainer);
     const successContainer = cloneTemplate('#success')
-    this.success = new Success(this.events, successContainer);
+    const success = new Success(events, successContainer);
     const galleryContainer = ensureElement<HTMLElement>('.gallery')
-    this.gallery = new Gallery(this.events, galleryContainer);
+    const gallery = new Gallery(events, galleryContainer);
     
-    this.basket = new Basket(this.events);
-    this.buyer = new Buyer(this.events);
-    this.catalog = new Catalogue(this.events);
-    this.api = new Api(API_URL);
-    this.apiInteraction = new ApiInteraction(this.api)
+    const basket = new Basket(events);
+    const buyer = new Buyer(events);
+    const catalog = new Catalogue(events);
+    const api = new Api(API_URL);
+    const apiInteraction = new ApiInteraction(api)
 
-    this.getServerData()
-    this.header.render();
-    this.gallery.render();
-    this.onEvents()
+    getServerData()
+    header.render();
+    gallery.render();
+    onEvents()
     
-  }
+  //}
 
-  onEvents(){
-    this.events.on('catalog:changed', () => {
-      this.gallery.catalog = this.catalog.getItems().map((item) => {
+  function onEvents(){
+    events.on('catalog:changed', () => {
+      gallery.catalog = catalog.getItems().map((item) => {
         const cardTemplate = cloneTemplate('#card-catalog')
-        return new CardCatalog(this.events, cardTemplate, {onClick: () => this.events.emit(EventList.CatalogSaveChoosenCard, item)}).render({
+        return new CardCatalog(events, cardTemplate, {onClick: () => events.emit(EventList.CatalogSaveChoosenCard, item)}).render({
           category: item.category,
           title: item.title,
           price: item.price,
@@ -89,174 +89,174 @@ class Presenter{
       console.log('событие изменения каталога произошло')
     })
 
-    this.events.on('catalog:chooseCard', (item: Item) => {
-      this.catalog.setChoosenCard(item)
-      console.log('событие сохранения карточки произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+    events.on('catalog:chooseCard', (item: Item) => {
+      catalog.setChoosenCard(item)
+      console.log('событие сохранения карточки произошло', catalog.getChoosenCard(), basket.getItems())
     })
 
-    this.events.on('catalogue:savedItemChanged', () => {
-      const item = this.catalog.getChoosenCard();
+    events.on('catalogue:savedItemChanged', () => {
+      const item = catalog.getChoosenCard();
       if(item === null) { return;}
-      const productCardToShow = this.cardPreview.render({
+      const productCardToShow = cardPreview.render({
         title: item.title,
         price: item.price,
         category: item.category,
         image: CDN_URL + item.image,
         description: item.description,
       })
-      const isAddedToCart = this.basket.isItemInBasket(item.id)
+      const isAddedToCart = basket.isItemInBasket(item.id)
       const priceLess = item.price
       console.log(isAddedToCart)
-      this.cardPreview.activateBuyButton(priceLess, isAddedToCart)
-      this.modalContainer.open()
-      this.modalContainer.render({content: productCardToShow})
-      console.log('событие открытия карточки произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+      cardPreview.activateBuyButton(priceLess, isAddedToCart)
+      modalContainer.open()
+      modalContainer.render({content: productCardToShow})
+      console.log('событие открытия карточки произошло', catalog.getChoosenCard(), basket.getItems())
     })
 
-    this.events.on('modal:close', () => {
-      this.modalContainer.close();
-      console.log('событие закрытия модалки произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+    events.on('modal:close', () => {
+      modalContainer.close();
+      console.log('событие закрытия модалки произошло', catalog.getChoosenCard(), basket.getItems())
     })
 
-    this.events.on('item:addToCard', ()=>{
-      const item = this.catalog.getChoosenCard();
+    events.on('item:addToCard', ()=>{
+      const item = catalog.getChoosenCard();
       if(item===null){return};
-      const isAddedToCart = this.basket.isItemInBasket(item.id);
+      const isAddedToCart = basket.isItemInBasket(item.id);
       if(isAddedToCart){
-        this.basket.deleteItem(item.id)
+        basket.deleteItem(item.id)
       }
       else{
-        this.basket.addItem(item)
+        basket.addItem(item)
       }
-      console.log('событие добавления в корзину произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+      console.log('событие добавления в корзину произошло', catalog.getChoosenCard(), basket.getItems())
     })
 
-    this.events.on('basket:deleteItem', ()=>{
-      this.rerenderItemComponents()
+    events.on('basket:deleteItem', ()=>{
+      rerenderItemComponents()
     })
-    this.events.on('basket:addItem', ()=>{
-      this.rerenderItemComponents()
-    })
-
-    this.events.on('basket:open', ()=>{
-      this.modalContainer.open()
-      this.modalContainer.render({content: this.basketView.render({price: this.basket.getFullPrice()})})
-      console.log('событие открытия козины произошло', this.catalog.getChoosenCard(), this.basket.getItems())
+    events.on('basket:addItem', ()=>{
+      rerenderItemComponents()
     })
 
-    this.events.on('item:deleteFromCard', (itemToRemove: Item)=>{
-      this.basket.deleteItem(itemToRemove.id);
-      console.log('событие удаления товара из корзины произошло', this.basket.getItems())
+    events.on('basket:open', ()=>{
+      modalContainer.open()
+      modalContainer.render({content: basketView.render({price: basket.getFullPrice()})})
+      console.log('событие открытия козины произошло', catalog.getChoosenCard(), basket.getItems())
     })
 
-    this.events.on('order:make', ()=>{
-      this.modalContainer.render({content: this.formOrder.render({address: this.buyer.getAllData().address})})
+    events.on('item:deleteFromCard', (itemToRemove: Item)=>{
+      basket.deleteItem(itemToRemove.id);
+      console.log('событие удаления товара из корзины произошло', basket.getItems())
+    })
+
+    events.on('order:make', ()=>{
+      modalContainer.render({content: formOrder.render({address: buyer.getAllData().address})})
       console.log('событие открытия формы оформления заказа произошло')
     })
 
-    this.events.on('form:paymentChoosen', ({ payment }: { payment: string })=>{
+    events.on('form:paymentChoosen', ({ payment }: { payment: string })=>{
       const pay = payment as Payment
-      this.buyer.saveData({payment: pay})
-      this.formOrder.errors = this.buyer.validatePayment() + this.buyer.validateAdress()
-      console.log('событие выбора способа оплаты произошло', this.buyer)
+      buyer.saveData({payment: pay})
+      formOrder.errors = buyer.validatePayment() + buyer.validateAdress()
+      console.log('событие выбора способа оплаты произошло', buyer)
       
       
     })
 
-    this.events.on('form:input', ({vieldName, vieldValue }: {vieldName:string, vieldValue: string})=>{//(input: HTMLInputElement)=>{
-      console.log('событие ввода поля произошло', this.buyer)
+    events.on('form:input', ({vieldName, vieldValue }: {vieldName:string, vieldValue: string})=>{//(input: HTMLInputElement)=>{
+      console.log('событие ввода поля произошло', buyer)
       if(vieldName === 'address'){
-        this.formOrder.errors = this.buyer.validateAdress() + this.buyer.validatePayment()
+        formOrder.errors = buyer.validateAdress() + buyer.validatePayment()
       }
       else if(vieldName === 'phone' || vieldName === 'email'){
-        this.formContact.errors = this.buyer.validatePhone() + this.buyer.validateEmail()
+        formContact.errors = buyer.validatePhone() + buyer.validateEmail()
       }
-      this.buyer.saveData({[vieldName]: vieldValue})
+      buyer.saveData({[vieldName]: vieldValue})
       
     })
 
-    this.events.on('formOrder:validate', ()=>{
-      if(this.buyer.getAllData().payment && this.buyer.getAllData().address 
-        && (this.formOrder.errors === '' 
-        || this.formOrder.errors === undefined)){
-        this.formOrder.activateNextButton(true)
+    events.on('formOrder:validate', ()=>{
+      if(buyer.getAllData().payment && buyer.getAllData().address 
+        && (formOrder.errors === '' 
+        || formOrder.errors === undefined)){
+        formOrder.activateNextButton(true)
       }
       else{
-        this.formOrder.activateNextButton(false)       
+        formOrder.activateNextButton(false)       
       }
       console.log('событие валидации заказа произошло')
     })
 
-    this.events.on('formContact:validate', ()=>{
-      if(this.buyer.getAllData().phone && this.buyer.getAllData().email 
-        && (this.formContact.errors === '' 
-        || this.formContact.errors === undefined)){
-        this.formContact.activateNextButton(true)
+    events.on('formContact:validate', ()=>{
+      if(buyer.getAllData().phone && buyer.getAllData().email 
+        && (formContact.errors === '' 
+        || formContact.errors === undefined)){
+        formContact.activateNextButton(true)
       }
       else{
-        this.formContact.activateNextButton(false)       
+        formContact.activateNextButton(false)       
       }
       console.log('событие валидации контактов произошло')
 
     })
 
-    this.events.on('formContact:show', ()=>{
-      this.modalContainer.render({content: this.formContact.render({email: this.buyer.getAllData().email, phone: this.buyer.getAllData().phone})})
+    events.on('formContact:show', ()=>{
+      modalContainer.render({content: formContact.render({email: buyer.getAllData().email, phone: buyer.getAllData().phone})})
       console.log('событие открытия формы заполнения контактов произошло')
     })
     
-    this.events.on('order:finish', ()=>{
-      this.apiInteraction.postOrder({
-         ...this.buyer.getAllData(), total: this.basket.getFullPrice(), 
-         items: this.basket.getItems().map((item) => item.id)}).then((result) => {
+    events.on('order:finish', ()=>{
+      apiInteraction.postOrder({
+         ...buyer.getAllData(), total: basket.getFullPrice(), 
+         items: basket.getItems().map((item) => item.id)}).then((result) => {
           console.log('Заказ оформлен')
-          this.success.count = this.basket.getFullPrice()
-          this.modalContainer.render({content: this.success.render()});
-          this.buyer.clearFields();
-          this.basket.clearBasket()
+          success.count = basket.getFullPrice()
+          modalContainer.render({content: success.render()});
+          buyer.clearFields();
+          basket.clearBasket()
         })
         .catch((error) => {
-          this.formContact.errors = String(error)
+          formContact.errors = String(error)
         })
       
-      console.log('событие завершения заказа произошло', this.basket, this.buyer)
+      console.log('событие завершения заказа произошло', basket, buyer)
     })
 
     
-    this.events.on('succes:close',()=>{
-      this.modalContainer.close();
+    events.on('succes:close',()=>{
+      modalContainer.close();
     })
   }
-  rerenderItemComponents(){
-    this.header.render({counter: this.basket.getItems().length})//ререндер хэдэра
+  function rerenderItemComponents(){
+    header.render({counter: basket.getItems().length})//ререндер хэдэра
     //ререндер корзины
-    this.basketView.basketItems = this.basket.getItems().map((item, index) => {
+    basketView.basketItems = basket.getItems().map((item, index) => {
       const cardTemplate = cloneTemplate('#card-basket')
-      return new CardBasket(this.events, cardTemplate, {onClick: () => this.events.emit(EventList.DeleteItemFromCard, item)}).render({
+      return new CardBasket(events, cardTemplate, {onClick: () => events.emit(EventList.DeleteItemFromCard, item)}).render({
         title: item.title,
         price: item.price,
         index: String(index+1),
       })
     })
-    this.basketView.buttonActivate(this.basket.getItems().length)
+    basketView.buttonActivate(basket.getItems().length)
     //this.modalContainer.render({content: this.basketView.render({price: this.basket.getFullPrice()})})
     //ререндер карточки товара
-    const item = this.catalog.getChoosenCard()
+    const item = catalog.getChoosenCard()
     if(item === null){return;}
-    const isAddedToCart = this.basket.isItemInBasket(item.id)
+    const isAddedToCart = basket.isItemInBasket(item.id)
     const priceLess = item.price
-    this.cardPreview.activateBuyButton(priceLess, isAddedToCart)
+    cardPreview.activateBuyButton(priceLess, isAddedToCart)
     //this.modalContainer.render({content: productCardToShow})
   }
 
-  getServerData(){
+  function getServerData(){
     
-    this.apiInteraction.getProducts().then((result) => {
+    apiInteraction.getProducts().then((result) => {
       console.log('Сырые данные с сервера:', result)
       if (result && result.items) {
         try {
-          this.catalog.setItems(result.items);
-          console.log( 'извлеченные данные: ',JSON.stringify(this.catalog.getItems())
+          catalog.setItems(result.items);
+          console.log( 'извлеченные данные: ',JSON.stringify(catalog.getItems())
           )
         } catch (error) {
           console.error('ошибка извлечения данных', error)
@@ -270,7 +270,7 @@ class Presenter{
     })
   }
 
-}
+//}
 
 
-const presenter = new Presenter();
+//const presenter = new Presenter();
