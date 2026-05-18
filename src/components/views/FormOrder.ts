@@ -23,7 +23,7 @@ export class FormOrder extends Form{
       this.events.emit('form:input', {vieldName: this.formInput.name, vieldValue: this.formInput.value});//this.formInput);
     })
     this.submitButton.addEventListener('click', ()=> {
-      this.events.emit('formContact:show');
+      this.events.emit('formContact:open');
     })
   }
 

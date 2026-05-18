@@ -1,3 +1,4 @@
+import { Payment } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
@@ -7,6 +8,8 @@ interface IForm{
   address?:string;
   email?:string;
   phone?:string;
+  payment?: Payment;
+  validity: boolean;
 }
 
 export class Form extends Component<IForm>{

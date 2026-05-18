@@ -12,18 +12,19 @@ export enum EventList {
     DeleteItemFromCard = 'item:deleteFromCard',
     SavedItemChanged = 'catalogue:savedItemChanged',
     AddItemToCard = 'item:addToCard',
-    OpenFormContact = 'formContact:show',
+    OpenFormContact = 'formContact:open',
     InputForm = 'form:input',
     FormPaymentChoosen = 'form:paymentChoosen',
     OpenBasket = 'basket:open',
     ModalClose = 'modal:close',
     CatalogueChanged = 'catalog:changed',
     CatalogSaveChoosenCard = 'catalog:chooseCard',
-    FormOrderValidation = 'formOrder:validate',
-    FormContactValidation = 'formContact:validate',
+    OrderDataSaved = 'dataSaved:Order',
+    ContactDataSaved = 'dataSaved:Contact',
     SuccesClosed = 'succes:close',
     ItemDeleted = 'basket:deleteItem',
     ItemAdded = 'basket:addItem',
+    BuyerCleaned = 'buyer:cleaned'
 }
 
 export interface IEvents {

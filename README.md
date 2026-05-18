@@ -418,15 +418,16 @@ Presenter - презентер содержит основную логику п
 `DeleteItemFromCard - 'item:deleteFromCard'` - удаление товара из корзины
 `DeleteItemFromCard - 'item:deleteFromCard'` - открытие полноразмерной карточки товара
 `AddItemToCard - 'item:addToCard'` - добавление товара в корзину
-`OpenFormContact - 'formContact:show'` - открыта форма заполнения контактов
+`OpenFormContact - 'formContact:open'` - открыта форма заполнения контактов
 `InputForm - 'form:input'` - ввод поля
 `FormPaymentChoosen - 'form:paymentChoosen'` - выбор способа оплаты
 `OpenBasket - 'basket:open'` - открытие формы корзины
 `ModalClose - 'modal:close'` - закрытие модального окна
 `CatalogueChanged - 'catalog:changed'` - изменение каталога
 `CatalogSaveChoosenCard - 'catalog:chooseCard'` - запоминание выбранной карточки товара
-`FormOrderValidation - 'formOrder:validate'` - валидация формы ввода данных заказа
-`FormContactValidation - 'formContact:validate` - валидация формы ввода контактов
+`OrderDataSaved - 'dataSaved:Order'` - валидация формы ввода данных заказа
+`ContactDataSaved = 'dataSaved:Contact'` - валидация формы ввода контактов
 `SuccesClosed - 'succes:close'` - закрытие окна окочания заказа через его кнопку
 `ItemDeleted - 'basket:deleteItem'` - обработка удаления элемента из модели данных корзины
 `ItemAdded - 'basket:addItem'` - обработка добавления элемента в модель данны корзины
+`BuyerCleaned - 'buyer:cleaned'` - обработка очистки данных покупателя

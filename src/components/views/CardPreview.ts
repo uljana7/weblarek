@@ -43,22 +43,12 @@ export class CardPreview extends Card{
     this.descriptionElement.textContent = value;
   }
 
-  activateBuyButton(priceLess: number|null, added: boolean){
-    if(priceLess === null){//this.priceElement.textContent === 'Бесценно'){//проверка на бесценность
-      this.cardButton.textContent = 'Недоступно';
-      this.cardButton.disabled = true;
-      return;
-    }
-    else{
-      this.cardButton.textContent = 'Купить';
-      this.cardButton.disabled = false;
-    }
+  setTextBuyButton( value: string){
+    this.cardButton.textContent = value;
+  }
 
-    if(added){//проверка на нахождение в корзине
-      this.cardButton.textContent = 'Удалить из корзины'
-    }
-    else{
-      this.cardButton.textContent = 'Купить';
-    }
+  activateBuyButton(value: string, disabled: boolean){
+    this.cardButton.textContent = value;
+    this.cardButton.disabled = disabled;
   }
 }

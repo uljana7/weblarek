@@ -23,26 +23,6 @@ import { FormContact } from './components/views/FormContact.ts';
 import { EventList } from './components/base/Events.ts';
 import { Item, Payment } from './types';
 
-
-//class Presenter{
-
-  /*private basketView: BasketView;
-  private cardPreview: CardPreview;
-  private formOrder: FormOrder;
-  private formContact: FormContact;
-  private gallery: Gallery;
-  private header: Header;
-  private modalContainer: ModalContainer;
-  private success: Success;
-
-  private basket: Basket;
-  private buyer: Buyer;
-  private catalog: Catalogue;
-  private apiInteraction: ApiInteraction;
-  private api: Api;
-  private events: EventEmitter;
-
-  constructor(){*/
     const events = new EventEmitter();
     const basketContainer = cloneTemplate('#basket')
     const basketView = new BasketView(events, basketContainer);    
@@ -71,11 +51,7 @@ import { Item, Payment } from './types';
     getServerData()
     header.render();
     gallery.render();
-    onEvents()
     
-  //}
-
-  function onEvents(){
     events.on('catalog:changed', () => {
       gallery.catalog = catalog.getItems().map((item) => {
         const cardTemplate = cloneTemplate('#card-catalog')
@@ -104,10 +80,15 @@ import { Item, Payment } from './types';
         image: CDN_URL + item.image,
         description: item.description,
       })
-      const isAddedToCart = basket.isItemInBasket(item.id)
-      const priceLess = item.price
-      console.log(isAddedToCart)
-      cardPreview.activateBuyButton(priceLess, isAddedToCart)
+      if(item.price === null){//проверка на бесценность
+        cardPreview.activateBuyButton('Недоступно', true)
+      }
+      else{
+        cardPreview.activateBuyButton('Купить', false)
+        if(basket.isItemInBasket(item.id)){//проверка на нахождение в корзине
+          cardPreview.setTextBuyButton('Удалить из корзины')
+        }
+      }
       modalContainer.open()
       modalContainer.render({content: productCardToShow})
       console.log('событие открытия карточки произошло', catalog.getChoosenCard(), basket.getItems())
@@ -129,6 +110,7 @@ import { Item, Payment } from './types';
         basket.addItem(item)
       }
       console.log('событие добавления в корзину произошло', catalog.getChoosenCard(), basket.getItems())
+      modalContainer.close()
     })
 
     events.on('basket:deleteItem', ()=>{
@@ -140,7 +122,7 @@ import { Item, Payment } from './types';
 
     events.on('basket:open', ()=>{
       modalContainer.open()
-      modalContainer.render({content: basketView.render({price: basket.getFullPrice()})})
+      modalContainer.render({content: basketView.render()})
       console.log('событие открытия козины произошло', catalog.getChoosenCard(), basket.getItems())
     })
 
@@ -150,32 +132,27 @@ import { Item, Payment } from './types';
     })
 
     events.on('order:make', ()=>{
-      modalContainer.render({content: formOrder.render({address: buyer.getAllData().address})})
+      modalContainer.render({content: formOrder.render({address: buyer.getAllData().address,
+        payment: buyer.getAllData().payment,
+        errors: formOrder.errors = buyer.validateAdress() + buyer.validatePayment(),
+        validity: false})})
       console.log('событие открытия формы оформления заказа произошло')
     })
 
     events.on('form:paymentChoosen', ({ payment }: { payment: string })=>{
       const pay = payment as Payment
       buyer.saveData({payment: pay})
-      formOrder.errors = buyer.validatePayment() + buyer.validateAdress()
       console.log('событие выбора способа оплаты произошло', buyer)
-      
-      
     })
 
     events.on('form:input', ({vieldName, vieldValue }: {vieldName:string, vieldValue: string})=>{//(input: HTMLInputElement)=>{
       console.log('событие ввода поля произошло', buyer)
-      if(vieldName === 'address'){
-        formOrder.errors = buyer.validateAdress() + buyer.validatePayment()
-      }
-      else if(vieldName === 'phone' || vieldName === 'email'){
-        formContact.errors = buyer.validatePhone() + buyer.validateEmail()
-      }
       buyer.saveData({[vieldName]: vieldValue})
       
     })
 
-    events.on('formOrder:validate', ()=>{
+    events.on('dataSaved:Order', ()=>{
+      formOrder.errors = buyer.validateAdress() + buyer.validatePayment()
       if(buyer.getAllData().payment && buyer.getAllData().address 
         && (formOrder.errors === '' 
         || formOrder.errors === undefined)){
@@ -187,7 +164,8 @@ import { Item, Payment } from './types';
       console.log('событие валидации заказа произошло')
     })
 
-    events.on('formContact:validate', ()=>{
+    events.on('dataSaved:Contact', ()=>{
+      formContact.errors = buyer.validatePhone() + buyer.validateEmail()
       if(buyer.getAllData().phone && buyer.getAllData().email 
         && (formContact.errors === '' 
         || formContact.errors === undefined)){
@@ -200,8 +178,11 @@ import { Item, Payment } from './types';
 
     })
 
-    events.on('formContact:show', ()=>{
-      modalContainer.render({content: formContact.render({email: buyer.getAllData().email, phone: buyer.getAllData().phone})})
+    events.on('formContact:open', ()=>{
+      modalContainer.render({content: formContact.render({email: buyer.getAllData().email,
+         phone: buyer.getAllData().phone,
+        errors: formOrder.errors = buyer.validatePhone() + buyer.validateEmail(),
+        validity: false})})
       console.log('событие открытия формы заполнения контактов произошло')
     })
     
@@ -222,11 +203,15 @@ import { Item, Payment } from './types';
       console.log('событие завершения заказа произошло', basket, buyer)
     })
 
+    events.on('buyer:cleaned', () => {
+      formOrder.activateNextButton(false)
+      formContact.activateNextButton(false)
+    })
     
     events.on('succes:close',()=>{
       modalContainer.close();
     })
-  }
+  
   function rerenderItemComponents(){
     header.render({counter: basket.getItems().length})//ререндер хэдэра
     //ререндер корзины
@@ -239,14 +224,19 @@ import { Item, Payment } from './types';
       })
     })
     basketView.buttonActivate(basket.getItems().length)
-    //this.modalContainer.render({content: this.basketView.render({price: this.basket.getFullPrice()})})
+    basketView.render({price: basket.getFullPrice()})
     //ререндер карточки товара
     const item = catalog.getChoosenCard()
     if(item === null){return;}
-    const isAddedToCart = basket.isItemInBasket(item.id)
-    const priceLess = item.price
-    cardPreview.activateBuyButton(priceLess, isAddedToCart)
-    //this.modalContainer.render({content: productCardToShow})
+    if(item.price === null){//проверка на бесценность
+      cardPreview.activateBuyButton('Недоступно', true)
+    }
+    else{
+      cardPreview.activateBuyButton('Купить', false)
+      if(basket.isItemInBasket(item.id)){//проверка на нахождение в корзине
+        cardPreview.setTextBuyButton('Удалить из корзины')
+      }
+    }
   }
 
   function getServerData(){

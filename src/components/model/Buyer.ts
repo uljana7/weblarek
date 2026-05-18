@@ -26,19 +26,19 @@ export class Buyer {
   saveData(data: Partial<BuyerInterface>): void {
     if (data.payment !== undefined) {
       this.payment = data.payment;
-      this.events.emit('formOrder:validate')
+      this.events.emit('dataSaved:Order')
     }
     if (data.address !== undefined) {
       this.address = data.address;
-      this.events.emit('formOrder:validate')
+      this.events.emit('dataSaved:Order')
     }
     if (data.email !== undefined) {
       this.email = data.email;
-      this.events.emit('formContact:validate')
+      this.events.emit('dataSaved:Contact')
     }
     if (data.phone !== undefined) {
       this.phone = data.phone;
-      this.events.emit('formContact:validate')
+      this.events.emit('dataSaved:Contact')
     }
     
   }
@@ -84,8 +84,7 @@ export class Buyer {
     this.address = '';
     this.email = '';
     this.phone = '';
-    this.events.emit('formContact:validate')
-    this.events.emit('formOrder:validate')
+    this.events.emit('buyer:cleaned')
   }
     
 }
