@@ -114,10 +114,14 @@ import { Item, Payment } from './types';
     })
 
     events.on('basket:deleteItem', ()=>{
-      rerenderItemComponents()
+      rerenderBasket()
+      rerenderHeader()
+      rerenderCardPreviewButtons()
     })
     events.on('basket:addItem', ()=>{
-      rerenderItemComponents()
+      rerenderBasket();
+      rerenderHeader();
+      rerenderCardPreviewButtons()
     })
 
     events.on('basket:open', ()=>{
@@ -151,11 +155,17 @@ import { Item, Payment } from './types';
       
     })
 
-    events.on('dataSaved:Order', ()=>{
+    events.on('dataChanged:Buyer', ()=>{
       formOrder.errors = buyer.validateAdress() + buyer.validatePayment()
-      if(buyer.getAllData().payment && buyer.getAllData().address 
-        && (formOrder.errors === '' 
-        || formOrder.errors === undefined)){
+      formContact.errors = buyer.validatePhone() + buyer.validateEmail()
+      if(formContact.errors === '' || formContact.errors === undefined){
+        formContact.activateNextButton(true)
+      }
+      else{
+        formContact.activateNextButton(false)       
+      }
+      console.log('событие валидации контактов произошло')
+      if(formOrder.errors === '' || formOrder.errors === undefined){
         formOrder.activateNextButton(true)
       }
       else{
@@ -163,21 +173,7 @@ import { Item, Payment } from './types';
       }
       console.log('событие валидации заказа произошло')
     })
-
-    events.on('dataSaved:Contact', ()=>{
-      formContact.errors = buyer.validatePhone() + buyer.validateEmail()
-      if(buyer.getAllData().phone && buyer.getAllData().email 
-        && (formContact.errors === '' 
-        || formContact.errors === undefined)){
-        formContact.activateNextButton(true)
-      }
-      else{
-        formContact.activateNextButton(false)       
-      }
-      console.log('событие валидации контактов произошло')
-
-    })
-
+    
     events.on('formContact:open', ()=>{
       modalContainer.render({content: formContact.render({email: buyer.getAllData().email,
          phone: buyer.getAllData().phone,
@@ -203,19 +199,15 @@ import { Item, Payment } from './types';
       console.log('событие завершения заказа произошло', basket, buyer)
     })
 
-    events.on('buyer:cleaned', () => {
-      formOrder.activateNextButton(false)
-      formContact.activateNextButton(false)
-    })
-    
     events.on('succes:close',()=>{
       modalContainer.close();
     })
   
-  function rerenderItemComponents(){
-    header.render({counter: basket.getItems().length})//ререндер хэдэра
-    //ререндер корзины
-    basketView.basketItems = basket.getItems().map((item, index) => {
+    function rerenderHeader(){
+      header.render({counter: basket.getItems().length})
+    }
+    function rerenderBasket(){
+      basketView.basketItems = basket.getItems().map((item, index) => {
       const cardTemplate = cloneTemplate('#card-basket')
       return new CardBasket(events, cardTemplate, {onClick: () => events.emit(EventList.DeleteItemFromCard, item)}).render({
         title: item.title,
@@ -223,9 +215,15 @@ import { Item, Payment } from './types';
         index: String(index+1),
       })
     })
-    basketView.buttonActivate(basket.getItems().length)
+    if(basket.getItems().length===0 ){
+      basketView.buttonActivate(true)
+    }
+    else{
+      basketView.buttonActivate(false)
+    }
     basketView.render({price: basket.getFullPrice()})
-    //ререндер карточки товара
+    }
+  function rerenderCardPreviewButtons(){
     const item = catalog.getChoosenCard()
     if(item === null){return;}
     if(item.price === null){//проверка на бесценность

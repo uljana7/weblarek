@@ -425,9 +425,7 @@ Presenter - презентер содержит основную логику п
 `ModalClose - 'modal:close'` - закрытие модального окна
 `CatalogueChanged - 'catalog:changed'` - изменение каталога
 `CatalogSaveChoosenCard - 'catalog:chooseCard'` - запоминание выбранной карточки товара
-`OrderDataSaved - 'dataSaved:Order'` - валидация формы ввода данных заказа
-`ContactDataSaved = 'dataSaved:Contact'` - валидация формы ввода контактов
+`BuyerDataChanged = 'dataChanged:Buyer'` - обработка изменения данных о покупателе
 `SuccesClosed - 'succes:close'` - закрытие окна окочания заказа через его кнопку
 `ItemDeleted - 'basket:deleteItem'` - обработка удаления элемента из модели данных корзины
 `ItemAdded - 'basket:addItem'` - обработка добавления элемента в модель данны корзины
-`BuyerCleaned - 'buyer:cleaned'` - обработка очистки данных покупателя

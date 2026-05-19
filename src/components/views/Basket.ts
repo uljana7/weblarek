@@ -19,7 +19,7 @@ export class Basket extends Component<IBasket>{
     this.basketButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
     this.basket = ensureElement<HTMLUListElement>('.basket__list', this.container);
     this.priceElement = ensureElement<HTMLElement>('.basket__price', this.container);
-
+    this.basketButton.disabled = true;
     
     this.basketButton.addEventListener('click', ()=> {
       this.events.emit('order:make');
@@ -34,13 +34,8 @@ export class Basket extends Component<IBasket>{
     this.basket.replaceChildren(...items);
   }
 
-  buttonActivate(itemsNumber: number){
-    if(itemsNumber===0){
-      this.basketButton.disabled = true
-    }
-    else{
-      this.basketButton.disabled = false
-    }
+  buttonActivate(disabled: boolean){//itemsNumber: number){
+    this.basketButton.disabled = disabled
   }
 
 }

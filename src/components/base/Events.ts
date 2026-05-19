@@ -19,12 +19,10 @@ export enum EventList {
     ModalClose = 'modal:close',
     CatalogueChanged = 'catalog:changed',
     CatalogSaveChoosenCard = 'catalog:chooseCard',
-    OrderDataSaved = 'dataSaved:Order',
-    ContactDataSaved = 'dataSaved:Contact',
+    BuyerDataChanged = 'dataChanged:Buyer',
     SuccesClosed = 'succes:close',
     ItemDeleted = 'basket:deleteItem',
-    ItemAdded = 'basket:addItem',
-    BuyerCleaned = 'buyer:cleaned'
+    ItemAdded = 'basket:addItem'
 }
 
 export interface IEvents {
